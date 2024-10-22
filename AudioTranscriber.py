@@ -121,8 +121,7 @@ def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_pat
 ########################## PROGRAM STARTS HERE ####################################
 
 #GET THE AUDIO FILE PATH
-#audio_file_name = filedialog.askopenfilename(filetypes=[("Video/Audio Files", "*.mp4 *.mp3"), ("Transcript", "*.txt")])
-files = filedialog.askopenfilenames(filetypes=[("Video/Audio Files", "*.mp4 *.mp3"), ("Transcript", "*.txt")])
+files = filedialog.askopenfilenames(filetypes=[("Video/Audio Files", "*.mp4 *.mkv *.mp3"), ("Transcript", "*.txt")])
 filesList = list(files)
 if not filesList:
     messagebox.showerror(title="Error", message="No file selected.")
@@ -142,7 +141,7 @@ while filesList:
     docx_path = ""
 
     #Extract audio if file is a video
-    if audio_file_name.endswith(".mp4"):
+    if audio_file_name.endswith(".mp4") or audio_file_name.endswith(".mkv"):
         audio_file_path = extract_audio(audio_file_path)
 
     if not audio_file_name.endswith(".txt"):
