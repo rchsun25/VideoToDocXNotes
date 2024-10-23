@@ -1,6 +1,6 @@
-# AudioTranscriber
+# VideoToDocXNotes
 
-**AudioTranscriber** is a Python-based tool that transcribes audio or extracts audio from video files, generates a transcription, and creates a summarized document using OpenAI's language models. It supports output in `.md` (Markdown) and `.docx` formats.
+**VideoToDocXNotes** is a Python-based tool that transcribes audio or extracts audio from video files, generates a transcription, and creates a summarized document using OpenAI's language models. It supports output in `.md` (Markdown) and `.docx` formats.
 
 ## Features
 - **Audio extraction**: Automatically extracts audio from video files (`.mp4`, `.mkv`) using `ffmpeg`.
