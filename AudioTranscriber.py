@@ -1,4 +1,5 @@
 #Github: https://github.com/rchsun25/VideoToDocXNotes
+#Requirements - Need to install Pandoc and ffmpeg
 
 import os
 import warnings
@@ -11,9 +12,6 @@ import pypandoc
 import ffmpeg
 
 warnings.filterwarnings("ignore")
-
-#Requirements
-#Need to install Pandoc
 
 #Extract audio from video file
 def extract_audio(audio_file_path):
@@ -62,9 +60,10 @@ def transcribe_audio(audio_file_path):
 #Process transcript to summary with openai
 def openai_summary(transcription_text):
 
-    #read api key from txt file
-    with open("C:/Users/reaga/Downloads/audioTest/chatgpt_key.txt", "r") as file:
-        api_key = file.read().strip()
+    #Need to set OPENAI_API_KEY as environment variable
+
+    #read api key from environment variable
+    api_key = os.getenv("OPENAI_API_KEY")
 
     client = OpenAI(api_key = api_key)
 
