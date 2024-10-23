@@ -1,3 +1,5 @@
+#Github: https://github.com/rchsun25/VideoToDocXNotes
+
 import os
 import warnings
 import whisper
