@@ -1,49 +1,73 @@
+# AudioTranscriber
 
-# Video to Audio Transcription & Summarization Tool
-
-This Python tool extracts audio from video files, transcribes it using a speech recognition model, and generates a summary using OpenAI's GPT model. The transcriptions and summaries are saved in both `.txt` and `.docx` formats, and the files are organized into folders for easy access.
+**AudioTranscriber** is a Python-based tool that transcribes audio or extracts audio from video files, generates a transcription, and creates a summarized document using OpenAI's language models. It supports output in `.md` (Markdown) and `.docx` formats.
 
 ## Features
-- **Audio Extraction**: Converts video files (`.mp4`) to audio files (`.mp3`).
-- **Automatic Transcription**: Transcribes audio files using the `whisper-small` model from Hugging Face's `transformers` library.
-- **AI-Powered Summarization**: Summarizes transcriptions using OpenAI's GPT model.
-- **File Organization**: Automatically organizes audio, transcription, and summary files into designated folders.
+- **Audio extraction**: Automatically extracts audio from video files (`.mp4`, `.mkv`) using `ffmpeg`.
+- **Transcription**: Uses OpenAI's Whisper model to transcribe audio files.
+- **Summarization**: Summarizes transcriptions using OpenAI GPT and formats the summary into a Markdown file.
+- **File organization**: Automatically organizes generated files into `WORK` and `NOTES` folders for easy access.
 
 ## Requirements
-The following libraries are required to run the code:
+- Python 3.7+
+- Whisper model (`transformers` package)
+- OpenAI API access
+- FFmpeg
+- Pypandoc
+- PyTorch
+- Tkinter
 
-```
-pip install transformers
-pip install torch
-pip install moviepy
-pip install openai
-pip install python-docx
-pip install pypandoc
-```
+## Installation
 
-## How It Works
-1. **Audio Extraction**: If a video file is selected, the audio is extracted and saved as an `.mp3` file.
-2. **Transcription**: The audio file is transcribed using the `whisper-small` model from Hugging Face.
-3. **Summarization**: The transcription text is summarized using OpenAI's GPT model. The summary is saved in Markdown (`.md`) and Word document (`.docx`) formats.
-4. **File Management**: Transcription results and summaries are moved to appropriate folders (`WORK` and `NOTES`).
+1. Install the required packages using pip:
 
-## File Structure
-The program creates the following folders in the directory where the audio or video file is located:
-- **WORK**: Stores the `.mp3` audio files and transcription files (`.txt` and `.md`).
-- **NOTES**: Stores the summarized document (`.docx`).
+    ```bash
+    pip install torch whisper ffmpeg pypandoc openai tkinter
+    ```
+
+2. Install **Pandoc** by following [this guide](https://pandoc.org/installing.html).
+
+3. Install **FFmpeg** by following [this guide](https://ffmpeg.org/download.html).
+
+4. Add your OpenAI API key to a file named `chatgpt_key.txt` and place it in the directory specified in the script (update the path if needed).
 
 ## Usage
-1. Run the script.
-2. Select the audio/video file(s) using the file dialog.
-3. The script will process each file, and results will be saved automatically.
 
-### Example Workflow:
-- Select an `.mp4` or `.mp3` file.
-- If a video file is selected, the audio is extracted.
-- The extracted audio is transcribed.
-- A summary is generated from the transcription.
-- All files are moved to their respective folders (`WORK` and `NOTES`).
+1. Run the `AudioTranscriber.py` script:
 
-## Additional Notes
-- The program supports `.mp4`, `.mp3`, and `.txt` files.
-- If a `.txt` file is selected, the program skips the transcription step and directly generates a summary from the text.
+    ```bash
+    python AudioTranscriber.py
+    ```
+
+2. Select the audio or video file you wish to process using the file dialog that appears.
+
+3. The program will:
+   - Extract the audio if it's a video file.
+   - Transcribe the audio.
+   - Summarize the transcription and generate output files in `.md` and `.docx` formats.
+
+4. All processed files will be moved to the appropriate folders:
+   - **WORK** folder for transcriptions and other working files.
+   - **NOTES** folder for the summarized documents.
+
+## Output
+
+- **Transcriptions**: Saved as `.txt` files.
+- **Summaries**: Available as `.md` and `.docx` files.
+
+## File Structure
+
+- **Processed files** are organized in the following folder structure:
+
+```
+|-- WORK/
+    |-- audio_file.mp3
+    |-- transcription.txt
+    |-- summary.md
+|-- NOTES/
+    |-- summary.docx
+```
+
+## Contributing
+
+Feel free to open issues or pull requests for suggestions and improvements.

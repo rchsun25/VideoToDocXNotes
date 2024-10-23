@@ -1,35 +1,24 @@
 import os
-from transformers import pipeline
-from datetime import datetime
 import warnings
+import whisper
 from openai import OpenAI
-from moviepy.editor import VideoFileClip
+import torch
 from tkinter import filedialog
 from tkinter import messagebox
 import pypandoc
+import ffmpeg
+
 warnings.filterwarnings("ignore")
 
 #Requirements
-#pip install transformers
-#pip install torch
-#pip install moviepy
-#pip install openai
-#pip install python-docx
-#pip install pypandoc
+#Need to install Pandoc
 
 #Extract audio from video file
 def extract_audio(audio_file_path):
+    print("\nExtracting audio from video file:", audio_file_path)
     mp3_audio_file_name = audio_file_name.split(".")[0] + ".mp3"
-    #Create mp3 audio file
-    print("Converting video to audio file:", audio_file_path)
-    video = VideoFileClip(audio_file_path)
-    audio = video.audio
-    audio.write_audiofile(os.path.join(audio_folder, mp3_audio_file_name))
+    ffmpeg.input(audio_file_path).output(mp3_audio_file_name, loglevel="quiet").run(overwrite_output=True)
     audio_file_path = mp3_audio_file_name
-
-    #close video and audio clips
-    video.close()
-    audio.close()
 
     #move video file to PROCESSED VIDEOS folder
     work_folder = os.path.join(audio_folder, "PROCESSED VIDEOS")
@@ -41,13 +30,26 @@ def extract_audio(audio_file_path):
 
 # TRANSFORMERS MODEL: whisper-small
 def transcribe_audio(audio_file_path):
-    print("Transcribing audio file:", audio_file_path)
-    transcriber = pipeline(task="automatic-speech-recognition", model="openai/whisper-small", return_timestamps=True)
-    transcription_results = transcriber(audio_file_path,generate_kwargs={'language': 'english'})
+    print("\nTranscribing audio file:", audio_file_path)
+
+    #Check if GPU is available
+    device = "cpu"
+    if torch.cuda.is_available() :
+        torch.cuda.init()
+        device = "cuda" 
+    print("Device:", device)
+
+    #Load the model
+    model_size = "small"
+    model = whisper.load_model(model_size).to(device)
+    language = "en"
+
+    #Transcribe the audio file
+    transcription_results = model.transcribe(audio_file_path, language=language)
     transcription_text = transcription_results.get('text', "No transcription results found.")
     
 # PRINT TRANSCRIPTION
-    print("Transcription Results:", transcription_text) 
+    print("\nTranscription Results:\n", transcription_text) 
     #write transcription to text file
     #transcription file path
     transcription_path = audio_file_name.split(".")[0] + "_transcription.txt"
@@ -67,13 +69,13 @@ def openai_summary(transcription_text):
     completion = client.chat.completions.create(
         model = "gpt-4o-mini",
         messages = [
-            {"role": "system", "content": "You are a detailed and thorough notetaker. You will be provided a transcript from a training video for an HVAC drawing automation design software called SDG. Our company designs and manufactures custom AHUs - Air Handling Units. Take notes based on this transcript. Use markdown to format your notes."},
+            {"role": "system", "content": "You are a detailed and thorough notetaker. You will be provided a transcript from a video. Take notes based on this transcript. Give an overall summary at the top, followed by detailed notes on what is happening in the video. The headings should be Summary and Notes. Use markdown to format your notes."},
             {"role": "user", 
             "content": transcription_text}
         ]
     )
 
-    print("Summary of the transcript:")
+    print("\nSummary of the transcript:")
     print(completion.choices[0].message.content)
 
     #write summary to .md file
@@ -82,7 +84,7 @@ def openai_summary(transcription_text):
     with open(md_path, "w", encoding="utf-8") as text_file:
         text_file.write(completion.choices[0].message.content)
 
-    print("MD summary saved to:", md_path)
+    print("\nMD summary saved to:", md_path)
 
     #save as .docx file
     docx_path = audio_file_name.split(".")[0] + "_notes.docx"
@@ -115,13 +117,19 @@ def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_pat
         os.replace(docx_path, os.path.join(notes_folder, os.path.basename(docx_path)))
     
             
-    print("Files moved to WORK and NOTES folders.")
+    print("\nFiles moved to WORK and NOTES folders.")
 
 
 ########################## PROGRAM STARTS HERE ####################################
 
 #GET THE AUDIO FILE PATH
-files = filedialog.askopenfilenames(filetypes=[("Video/Audio Files", "*.mp4 *.mkv *.mp3"), ("Transcript", "*.txt")])
+
+root = filedialog.Tk()
+root.wm_attributes('-topmost', 1)
+root.withdraw()
+
+files = filedialog.askopenfilenames(parent=root,
+                                    filetypes=[("Video/Audio Files", "*.mp4 *.mkv *.mp3"), ("Transcript", "*.txt")])
 filesList = list(files)
 if not filesList:
     messagebox.showerror(title="Error", message="No file selected.")
@@ -130,7 +138,7 @@ if not filesList:
 
 while filesList:
     audio_file_name = filesList.pop(0)
-    print("Processing file:", audio_file_name)
+    print("\nProcessing file:", audio_file_name)
 
     audio_folder = os.path.dirname(audio_file_name)
     audio_file_path = os.path.join(audio_folder, audio_file_name)
@@ -158,4 +166,4 @@ while filesList:
     #Move files to WORK and NOTES folders
     MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_path, docx_path)
 
-print("Process completed.")
+print("\nProcess completed.")
