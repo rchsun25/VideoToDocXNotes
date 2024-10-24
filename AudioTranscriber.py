@@ -150,7 +150,7 @@ while filesList:
     docx_path = ""
 
     #Extract audio if file is a video
-    if audio_file_name.endswith(".mp4") or audio_file_name.endswith(".mkv"):
+    if audio_file_name.endswith(('.mp4','.mkv')):
         audio_file_path = extract_audio(audio_file_path)
 
     if not audio_file_name.endswith(".txt"):
