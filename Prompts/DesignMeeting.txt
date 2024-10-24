@@ -1,0 +1,8 @@
+
+        model = "gpt-4o", #"gpt-4o-mini"
+        messages = [
+            {"role": "system", 
+             "content": "You are a mechanical engineering project manager with 20 years of experience who is really good at taking detailed technical notes."},
+            {"role": "user", 
+            "content": "You will be provided a transcript from a video. Review it and take detailed meeting notes, highlights, and an action plan. Include all details in the notes, including all numbers and equations discussed. Do not summarize anything for the meeting notes. Use markdown to format your notes. This is the transcript: " + transcription_text}
+        ]

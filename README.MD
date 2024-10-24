@@ -3,6 +3,7 @@
 **VideoToDocXNotes** is a Python-based tool that transcribes audio or extracts audio from video files, generates a transcription, and creates a summarized document using OpenAI's language models. It supports output in `.md` (Markdown) and `.docx` formats.
 
 ## Features
+- **Supported input file types**: Video: `.mp4`, `.mkv`, Audio: `.mp3`, Transcript: `.txt`, `.docx`
 - **Audio extraction**: Automatically extracts audio from video files (`.mp4`, `.mkv`) using `ffmpeg`.
 - **Transcription**: Uses OpenAI's Whisper model to transcribe audio files.
 - **Summarization**: Summarizes transcriptions using OpenAI GPT and formats the summary into a Markdown file.
@@ -29,7 +30,7 @@
 
 3. Install **FFmpeg** by following [this guide](https://ffmpeg.org/download.html).
 
-4. Add your OpenAI API key to a file named `chatgpt_key.txt` and place it in the directory specified in the script (update the path if needed).
+4. Add your OpenAI API key to your user environmental variables by following [this guide](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
 ## Usage
 

@@ -68,11 +68,12 @@ def openai_summary(transcription_text):
     client = OpenAI(api_key = api_key)
 
     completion = client.chat.completions.create(
-        model = "gpt-4o-mini",
+        model = "gpt-4o",
         messages = [
-            {"role": "system", "content": "You are a detailed and thorough notetaker. You will be provided a transcript from a video. Take notes based on this transcript. Give an overall summary at the top, followed by detailed notes on what is happening in the video. The headings should be Summary and Notes. Use markdown to format your notes."},
+            {"role": "system", 
+             "content": "You are a mechanical engineering project manager with 20 years of experience who is really good at taking detailed technical notes."},
             {"role": "user", 
-            "content": transcription_text}
+            "content": "You will be provided a transcript from a video. Review it and take detailed meeting notes, highlights, and an action plan. Include all details in the notes, including all numbers and equations discussed. Do not summarize anything for the meeting notes. Use markdown to format your notes. This is the transcript: " + transcription_text}
         ]
     )
 
@@ -130,7 +131,7 @@ root.wm_attributes('-topmost', 1)
 root.withdraw()
 
 files = filedialog.askopenfilenames(parent=root,
-                                    filetypes=[("Video/Audio Files", "*.mp4 *.mkv *.mp3"), ("Transcript", "*.txt")])
+                                    filetypes=[("Video/Audio Files", "*.mp4 *.mkv *.mp3"), ("Transcript", "*.txt *.docx")])
 filesList = list(files)
 if not filesList:
     messagebox.showerror(title="Error", message="No file selected.")
@@ -153,14 +154,20 @@ while filesList:
     if audio_file_name.endswith(('.mp4','.mkv')):
         audio_file_path = extract_audio(audio_file_path)
 
-    if not audio_file_name.endswith(".txt"):
+    elif audio_file_name.endswith('.mp3'):
         #SEARCH FOR THE AUDIO IN THE FILE PATH AND EXECUTE TRANSCRIPTION
         transcription_text,transcription_path = transcribe_audio(audio_file_path)
-    else:
+    elif audio_file_name.endswith(('.txt')):
         #READ TRANSCRIPTION FROM THE TEXT FILE
         with open(audio_file_path, "r", encoding="utf-8") as text_file:
             transcription_text = text_file.read()
-
+    elif audio_file_name.endswith('.docx'):
+        #READ TRANSCRIPTION FROM THE DOCX FILE
+        transcription_text = pypandoc.convert_file(audio_file_path, 'plain', format='docx')
+    else:
+        messagebox.showerror(title="Error", message="File type not supported.")
+        print("\nFile type not supported.")
+        exit()
     #Process transcript to summary with openai
     md_path, docx_path = openai_summary(transcription_text)
 
