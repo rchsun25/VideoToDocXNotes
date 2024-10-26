@@ -14,19 +14,19 @@ import ffmpeg
 warnings.filterwarnings("ignore")
 
 #Extract audio from video file
-def extract_audio(audio_file_path):
-    print("\nExtracting audio from video file:", audio_file_path)
-    mp3_audio_file_name = audio_file_name.split(".")[0] + ".mp3"
-    ffmpeg.input(audio_file_path).output(mp3_audio_file_name, loglevel="quiet").run(overwrite_output=True)
-    audio_file_path = mp3_audio_file_name
+def extract_audio(audio_file):
+    print("\nExtracting audio from video file:", audio_file)
+    mp3_audio_file_name = pipelineFile.split(".")[0] + ".mp3"
+    ffmpeg.input(audio_file).output(mp3_audio_file_name, loglevel="quiet").run(overwrite_output=True)
+    audio_file = mp3_audio_file_name
 
     #move video file to PROCESSED VIDEOS folder
     work_folder = os.path.join(audio_folder, "PROCESSED VIDEOS")
     if not os.path.exists(work_folder):
         os.makedirs(work_folder)
-    os.replace(audio_file_name, os.path.join(work_folder, os.path.basename(audio_file_name)))
+    os.replace(pipelineFile, os.path.join(work_folder, os.path.basename(pipelineFile)))
 
-    return audio_file_path
+    return audio_file
 
 # TRANSFORMERS MODEL: whisper-small
 def transcribe_audio(audio_file_path):
@@ -52,7 +52,7 @@ def transcribe_audio(audio_file_path):
     print("\nTranscription Results:\n", transcription_text) 
     #write transcription to text file
     #transcription file path
-    transcription_path = audio_file_name.split(".")[0] + "_transcription.txt"
+    transcription_path = pipelineFile.split(".")[0] + "_transcription.txt"
     with open(transcription_path, "w", encoding="utf-8") as text_file:
         text_file.write(transcription_text)
     return transcription_text, transcription_path
@@ -71,9 +71,9 @@ def openai_summary(transcription_text):
         model = "gpt-4o",
         messages = [
             {"role": "system", 
-             "content": "You are a mechanical engineering project manager with 20 years of experience who is really good at taking detailed technical notes."},
+             "content": "You are a professor and instructor who is knowledgable about the subject matter. You are creating detailed lesson notes based on a video transcript."},
             {"role": "user", 
-            "content": "You will be provided a transcript from a video. Review it and take detailed meeting notes, highlights, and an action plan. Include all details in the notes, including all numbers and equations discussed. Do not summarize anything for the meeting notes. Use markdown to format your notes. This is the transcript: " + transcription_text}
+            "content": "The following is a transcript of a lesson. Based on this video, create a detailed document that is so detailed that the reader will not need to watch the video anymore. Do not mention that the reader does not need to watch the video. Use markdown to format your notes. This is the transcript: " + transcription_text}
         ]
     )
 
@@ -82,14 +82,14 @@ def openai_summary(transcription_text):
 
     #write summary to .md file
     #summary file path
-    md_path = audio_file_name.split(".")[0] + "_notes.md"
+    md_path = pipelineFile.split(".")[0] + "_notes.md"
     with open(md_path, "w", encoding="utf-8") as text_file:
         text_file.write(completion.choices[0].message.content)
 
     print("\nMD summary saved to:", md_path)
 
     #save as .docx file
-    docx_path = audio_file_name.split(".")[0] + "_notes.docx"
+    docx_path = pipelineFile.split(".")[0] + "_notes.docx"
     pypandoc.convert_file(md_path, 'docx', outputfile=docx_path)
     print("DOCX summary saved to:", docx_path)
     
@@ -114,7 +114,9 @@ def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_pat
     if os.path.exists(transcription_path):
         os.replace(transcription_path, os.path.join(work_folder, os .path.basename(transcription_path)))
     if os.path.exists(md_path):
-        os.replace(md_path, os.path.join(work_folder, os.path.basename(md_path)))
+        #os.replace(md_path, os.path.join(work_folder, os.path.basename(md_path)))
+        #delete the .md file
+        os.remove(md_path)
     if os.path.exists(docx_path):
         os.replace(docx_path, os.path.join(notes_folder, os.path.basename(docx_path)))
     
@@ -139,11 +141,10 @@ if not filesList:
     exit()
 
 while filesList:
-    audio_file_name = filesList.pop(0)
-    print("\nProcessing file:", audio_file_name)
+    pipelineFile = filesList.pop(0)
+    print("\nProcessing file:", pipelineFile)
 
-    audio_folder = os.path.dirname(audio_file_name)
-    audio_file_path = os.path.join(audio_folder, audio_file_name)
+    audio_folder = os.path.dirname(pipelineFile)
 
     transcription_path = ""
     transcription_text = ""
@@ -151,20 +152,22 @@ while filesList:
     docx_path = ""
 
     #Extract audio if file is a video
-    if audio_file_name.endswith(('.mp4','.mkv')):
-        audio_file_path = extract_audio(audio_file_path)
+    if pipelineFile.endswith(('.mp4','.mkv')):
+        pipelineFile = extract_audio(pipelineFile)
 
-    elif audio_file_name.endswith('.mp3'):
+    if pipelineFile.endswith('.mp3'):
         #SEARCH FOR THE AUDIO IN THE FILE PATH AND EXECUTE TRANSCRIPTION
-        transcription_text,transcription_path = transcribe_audio(audio_file_path)
-    elif audio_file_name.endswith(('.txt')):
+        transcription_text,transcription_path = transcribe_audio(pipelineFile)
+    if pipelineFile.endswith(('.txt')):
         #READ TRANSCRIPTION FROM THE TEXT FILE
-        with open(audio_file_path, "r", encoding="utf-8") as text_file:
+        with open(pipelineFile, "r", encoding="utf-8") as text_file:
             transcription_text = text_file.read()
-    elif audio_file_name.endswith('.docx'):
+    if pipelineFile.endswith('.docx'):
         #READ TRANSCRIPTION FROM THE DOCX FILE
-        transcription_text = pypandoc.convert_file(audio_file_path, 'plain', format='docx')
-    else:
+        transcription_text = pypandoc.convert_file(pipelineFile, 'plain', format='docx')
+
+    #If no transcription text found, something went wrong, exit
+    if not transcription_text:
         messagebox.showerror(title="Error", message="File type not supported.")
         print("\nFile type not supported.")
         exit()
@@ -172,6 +175,6 @@ while filesList:
     md_path, docx_path = openai_summary(transcription_text)
 
     #Move files to WORK and NOTES folders
-    MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_path, docx_path)
+    MoveFilestoFolders(audio_folder, pipelineFile, transcription_path, md_path, docx_path)
 
 print("\nProcess completed.")

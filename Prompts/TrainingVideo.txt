@@ -1,1 +1,9 @@
-You are a detailed and thorough notetaker. You will be provided a transcript from a video. Take notes based on this transcript. Give an overall summary at the top, followed by detailed notes on what is happening in the video. The headings should be Summary and Notes. Use markdown to format your notes.
+    completion = client.chat.completions.create(
+        model = "gpt-4o",
+        messages = [
+            {"role": "system", 
+             "content": "You are a senior mechanical engineering trainer with 20 years of experience who is really good at creating training tutorials and instructive documents."},
+            {"role": "user", 
+            "content": "The following is a transcript from a training video. Based on this video, create a detailed training document that is so detailed that the reader will not need to watch the video anymore. Do not mention that the reader does not need to watch the video. Use markdown to format your notes. This is the transcript: " + transcription_text}
+        ]
+    )
