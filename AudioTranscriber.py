@@ -137,6 +137,15 @@ def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_pat
             
     print("\nFiles moved to WORK and NOTES folders.")
 
+def uniquify(path):
+    filename, extension = os.path.splitext(path)
+    counter = 1
+
+    while os.path.exists(path):
+        path = filename + " (" + str(counter) + ")" + extension
+        counter += 1
+
+    return path
 
 ########################## PROGRAM STARTS HERE ####################################
 
