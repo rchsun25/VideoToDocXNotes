@@ -11,17 +11,42 @@ from tkinter import messagebox
 import pypandoc
 import ffmpeg
 
+import watchdog.events
+import watchdog.observers
+import time
+
 warnings.filterwarnings("ignore")
+
+#initialize global variables
+#audio_folder = "C:\\Users\\Reagan\\Desktop\\MeetingNotesGenerator\\Drop Here to Generate Meeting Notes" #working dir
+audio_folder = "E:\\MeetingNotesGenerator\\Drop Here to Generate Meeting Notes" #working dir
+pipelineFile = ""
+transcription_path = ""
+transcription_text = ""
+md_path = ""
+docx_path = ""
+
+
+#Watchdog class to monitor the folder for new files
+class Handler(watchdog.events.PatternMatchingEventHandler):
+    def __init__(self):
+        watchdog.events.PatternMatchingEventHandler.__init__(self, patterns=["*.mp4", "*.mkv", "*.mp3", "*.txt", "*.docx"], ignore_directories=True, case_sensitive=False)
+
+    def on_created(self, event):
+        print("\nNew file created:", event.src_path)
+        #Process the new file
+        run()
 
 #Extract audio from video file
 def extract_audio(audio_file):
+    global pipelineFile
     print("\nExtracting audio from video file:", audio_file)
     mp3_audio_file_name = pipelineFile.split(".")[0] + ".mp3"
     ffmpeg.input(audio_file).output(mp3_audio_file_name, loglevel="quiet").run(overwrite_output=True)
     audio_file = mp3_audio_file_name
 
-    #move video file to PROCESSED VIDEOS folder
-    work_folder = os.path.join(audio_folder, "PROCESSED VIDEOS")
+    #move video file to Processed Files folder
+    work_folder = os.path.join(audio_folder, '..', "Processed Files - DELETE IF YOU'RE DONE")
     if not os.path.exists(work_folder):
         os.makedirs(work_folder)
     os.replace(pipelineFile, os.path.join(work_folder, os.path.basename(pipelineFile)))
@@ -30,6 +55,8 @@ def extract_audio(audio_file):
 
 # TRANSFORMERS MODEL: whisper-small
 def transcribe_audio(audio_file_path):
+    global pipelineFile
+
     print("\nTranscribing audio file:", audio_file_path)
 
     #Check if GPU is available
@@ -48,7 +75,7 @@ def transcribe_audio(audio_file_path):
     transcription_results = model.transcribe(audio_file_path, language=language)
     transcription_text = transcription_results.get('text', "No transcription results found.")
     
-# PRINT TRANSCRIPTION
+    # PRINT TRANSCRIPTION
     print("\nTranscription Results:\n", transcription_text) 
     #write transcription to text file
     #transcription file path
@@ -59,6 +86,7 @@ def transcribe_audio(audio_file_path):
 
 #Process transcript to summary with openai
 def openai_summary(transcription_text):
+    global pipelineFile
 
     #Need to set OPENAI_API_KEY as environment variable
 
@@ -69,24 +97,12 @@ def openai_summary(transcription_text):
 
     completion = client.chat.completions.create(
         model = "gpt-4o",
-        # messages = [
-        #     {"role": "system", 
-        #      "content": "You are a professor and instructor who is knowledgable about the subject matter. You are creating detailed lesson notes based on a video transcript."},
-        #     {"role": "user", 
-        #     "content": "The following is a transcript of a lesson. Based on this video, create a detailed document that is so detailed that the reader will not need to watch the video anymore. Do not mention that the reader does not need to watch the video. Use markdown to format your notes. This is the transcript: " + transcription_text}
-        # ]
-    #    messages = [
-    #         {"role": "system", 
-    #          "content": "You are a mechanical engineering project manager with 20 years of experience who is really good at taking detailed technical notes."},
-    #         {"role": "user", 
-    #         "content": "You will be provided a transcript from a video. Review it and create detailed meeting notes, highlights, and an action plan. Include all details in the notes, including all numbers and equations discussed. Do not summarize anything for the meeting notes. Write notes that are so detailed that the reader will not have to watch the video at all. Use markdown to format your notes. This is the transcript: " + transcription_text}                                                                                                                                                                                                                                                                                                                                                                                                                 
-    #     ]
         messages = [
             {"role": "system", 
-            "content": "You are a detailed mechanical engineering notetaker knowledgable about the subject matter. You are creating detailed meeting notes based on a meeting transcript."},
+             "content": "You are a detailed mechanical engineering notetaker knowledgable about the subject matter. You are creating detailed meeting notes based on a meeting transcript."},
             {"role": "user",                                                                                      
              "content":
-                "Meeting Minutes: Develop comprehensive meeting minutes including: Attendees: List all participants. Discussion Points: Detail the topics discussed, including any debates, alternate viewpoints, problem statements, and current situations. Decisions Made: Record all decisions, including who made them and the rationale. Action Items: Specify tasks assigned, responsible individuals, and deadlines. Data & Insights: Display any data presented or insights shared that influenced the meeting\'s course, including any clarifications. Follow-Up: Note any agreed-upon follow-up meetings or checkpoints. Include all details in the notes, including all numbers and equations discussed. Do not summarize anything for the meeting notes. Write notes that are so detailed that the reader will not have to watch the video at all. Use markdown to format your notes. This is the transcript: " + transcription_text
+                "Meeting Minutes: Develop comprehensive meeting minutes including: Attendees: List all participants. Discussion Points: Detail the topics discussed, including any debates, alternate viewpoints, problem statements, and current situations. Decisions Made: Record all decisions, including who made them and the rationale. Action Items: Specify tasks assigned, responsible individuals, and deadlines. Data & Insights: Display any data presented or insights shared that influenced the meeting\'s course, including any clarifications. Follow-Up: Note any agreed-upon follow-up meetings or checkpoints. Include all details in the notes, including all numbers and equations discussed. Do not summarize anything for the meeting notes. If there are empty sections just remove them. Write notes that are so detailed that the reader will not have to watch the video at all. Use markdown to format your notes. This is the transcript: " + transcription_text
             }
         ]
     )
@@ -104,6 +120,7 @@ def openai_summary(transcription_text):
 
     #save as .docx file
     docx_path = pipelineFile.split(".")[0] + "_notes.docx"
+    uniquify(docx_path)
     pypandoc.convert_file(md_path, 'docx', outputfile=docx_path)
     print("DOCX summary saved to:", docx_path)
     
@@ -113,13 +130,13 @@ def openai_summary(transcription_text):
 #Move .docx file to a NOTES folder
 #Create WORK and NOTES folders if they don't exist
 def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_path, docx_path):
-    work_folder = os.path.join(audio_folder, "WORK")
-    notes_folder = os.path.join(audio_folder, "NOTES")
+    work_folder = os.path.join(audio_folder, '..', "Processed Files - DELETE IF YOU'RE DONE")
+    # notes_folder = os.path.join(audio_folder, "NOTES")
 
     if not os.path.exists(work_folder):
         os.makedirs(work_folder)
-    if not os.path.exists(notes_folder):
-        os.makedirs(notes_folder)
+    # if not os.path.exists(notes_folder):
+    #     os.makedirs(notes_folder)
 
     #Move files to WORK and NOTES folders
     #if file exists, replace it
@@ -132,10 +149,11 @@ def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_pat
         #delete the .md file
         os.remove(md_path)
     if os.path.exists(docx_path):
-        os.replace(docx_path, os.path.join(notes_folder, os.path.basename(docx_path)))
+        new_docx_path = uniquify(os.path.join(work_folder,'..', os.path.basename(docx_path)))
+        os.replace(docx_path, new_docx_path)
     
             
-    print("\nFiles moved to WORK and NOTES folders.")
+    print("\nFiles moved to Processed Files folder.")
 
 def uniquify(path):
     filename, extension = os.path.splitext(path)
@@ -147,32 +165,16 @@ def uniquify(path):
 
     return path
 
-########################## PROGRAM STARTS HERE ####################################
-
-#GET THE AUDIO FILE PATH
-
-root = filedialog.Tk()
-root.wm_attributes('-topmost', 1)
-root.withdraw()
-
-files = filedialog.askopenfilenames(parent=root,
-                                    filetypes=[("Video/Audio Files", "*.mp4 *.mkv *.mp3"), ("Transcript", "*.txt *.docx")])
-filesList = list(files)
-if not filesList:
-    messagebox.showerror(title="Error", message="No file selected.")
-    print("No file selected.")
-    exit()
-
-while filesList:
-    pipelineFile = filesList.pop(0)
-    print("\nProcessing file:", pipelineFile)
+def main():
+    #global variables
+    global audio_folder
+    global pipelineFile
+    global transcription_path
+    global transcription_text
+    global md_path
+    global docx_path
 
     audio_folder = os.path.dirname(pipelineFile)
-
-    transcription_path = ""
-    transcription_text = ""
-    md_path = ""
-    docx_path = ""
 
     #Extract audio if file is a video
     if pipelineFile.endswith(('.mp4','.mkv')):
@@ -200,4 +202,40 @@ while filesList:
     #Move files to WORK and NOTES folders
     MoveFilestoFolders(audio_folder, pipelineFile, transcription_path, md_path, docx_path)
 
-print("\nProcess completed.")
+def run():
+
+    global pipelineFile
+
+    #Get files in the folder with full paths
+    filesList = os.listdir(audio_folder)
+
+    #Process each file in the folder
+    while filesList:
+        file = filesList.pop(0)
+        if not file.endswith(('.mp4','.mkv','.mp3','.txt','.docx')):
+            print("File type not supported.")
+            continue
+
+        pipelineFile = audio_folder + "\\" + file #construct full path
+        print("\nProcessing file:", pipelineFile)
+        #make a text file one folder up to show that  the file is being processed
+        with open(os.path.join(audio_folder,'..',"PROCESSING - PLEASE WAIT.txt"), "w") as text_file:
+            text_file.write("Processing file: " + pipelineFile)
+        main()
+
+    #delete the processing file if exists
+    if os.path.exists(os.path.join(audio_folder,'..',"PROCESSING - PLEASE WAIT.txt")):
+        os.remove(os.path.join(audio_folder,'..',"PROCESSING - PLEASE WAIT.txt"))
+    print("\nProcess completed.")
+
+if __name__ == "__main__":
+    #Watchdog - monitor the folder for new files
+    observer = watchdog.observers.Observer()
+    observer.schedule(Handler(), path=audio_folder)
+    observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
