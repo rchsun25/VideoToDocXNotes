@@ -213,6 +213,9 @@ def run():
     while filesList:
         file = filesList.pop(0)
         if not file.endswith(('.mp4','.mkv','.mp3','.txt','.docx')):
+            #make a text file one folder up to show that file type is not supported
+            with open(os.path.join(audio_folder,'..',"FILE TYPE NOT SUPPORTED.txt"), "w") as text_file:
+                text_file.write("File type not supported: " + file)
             print("File type not supported.")
             continue
 
@@ -239,3 +242,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
+
+    #run() #run the script without watchdog
