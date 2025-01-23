@@ -100,7 +100,7 @@ def openai_summary(transcription_text):
         model = "gpt-4o",
         messages = [
             {"role": "system", 
-             "content": "You are a detailed mechanical engineering notetaker knowledgable about the subject matter. You are creating detailed meeting notes based on a meeting transcript."},
+             "content": "You are a detailed mechanical engineering notetaker knowledgable about the subject matter. You are creating detailed lecture module notes based on a lecture transcript."},
             {"role": "user",                                                                                      
              "content":
                 "Module Notes: Write comprehensive notes for a lecture module. Include: Module Title: Provide the title of the module. Module Description: Summarize the module's content. Learning Objectives: List the learning objectives. Key Concepts: Detail the key concepts. Detailed Notes: Take detailed notes and include everything. Make this section as long as possible so no details are left out. Examples: Provide examples to illustrate the concepts. Exercises: Include exercises to reinforce learning. References: List any references used.  Use markdown to format your notes. This is the transcript: " + transcription_text
@@ -263,6 +263,8 @@ def run():
     print("\nProcess completed.")
 
 if __name__ == "__main__":
+    if not os.path.exists(audio_folder):
+        os.makedirs(audio_folder)
     #Watchdog - monitor the folder for new files
     observer = watchdog.observers.Observer()
     observer.schedule(Handler(), path=audio_folder)

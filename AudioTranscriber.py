@@ -264,6 +264,8 @@ def run():
     print("\nProcess completed.")
 
 if __name__ == "__main__":
+    if not os.path.exists(audio_folder):
+        os.makedirs(audio_folder)
     #Watchdog - monitor the folder for new files
     observer = watchdog.observers.Observer()
     observer.schedule(Handler(), path=audio_folder)
