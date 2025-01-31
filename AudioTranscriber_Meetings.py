@@ -1,4 +1,4 @@
-#Github: https://github.com/rchsun25/VideoToDocXNotes
+#Github: https://github.com/rchsun25/VideoToDocXNotes/tree/Haakon-Folder-Watch
 #Requirements - Need to install Pandoc and ffmpeg
 
 import os
