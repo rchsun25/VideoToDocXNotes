@@ -171,10 +171,10 @@ class SummaryGenerator:
             model="gpt-4o",
             messages=[{
                 "role": "system",
-                "content": "You are a detailed mechanical engineering notetaker knowledgable about the subject matter. You are creating detailed lecture module notes based on a lecture transcript."
+                "content": "You are a detailed mechanical engineering notetaker knowledgable about the subject matter. You are creating detailed meeting notes based on a meeting transcript."
             }, {
                 "role": "user",
-                "content": f"Module Notes: Write comprehensive notes for a lecture module. Include: Module Title: Provide the title of the module. Module Description: Summarize the module's content. Learning Objectives: List the learning objectives. Key Concepts: Detail the key concepts. Detailed Notes: Take detailed notes and include everything. Make this section as long as possible so no details are left out. Examples: Provide examples to illustrate the concepts. Exercises: Include exercises to reinforce learning. References: List any references used.  Use markdown to format your notes. Transcript: {transcription}"
+                "content": f"Meeting Minutes: Develop comprehensive meeting minutes including: Attendees: List all participants. Brief Summary: Provide a brief summary of the discussion. Action Items: Specify tasks assigned, responsible individuals, and deadlines. Discussion Points: Detail the topics discussed, including any debates, alternate viewpoints, problem statements, and current situations. Make this section as long as possible so no details are left out. Decisions Made: Record all decisions, including who made them and the rationale. Data & Insights: Display any data presented or insights shared that influenced the meeting\'s course, including any clarifications. Follow-Up: Note any agreed-upon follow-up meetings or checkpoints. Include all details in the notes, including all numbers and equations discussed. Do not summarize anything for the meeting notes. If there are empty sections just remove them. Write notes that are so detailed that the reader will not have to watch the video at all. Use markdown to format your notes. Transcript: {transcription}"
             }]
         )
         
@@ -303,7 +303,7 @@ class FileMonitor:
 
 # Main execution
 if __name__ == "__main__":
-    INPUT_FOLDER = "E:\\ModuleNotesGenerator\\Drop Here to Generate Module Notes"
+    INPUT_FOLDER = "E:\\MeetingNotesGenerator\\Drop Here to Generate Meeting Notes"
     PROCESSED_FOLDER = os.path.join(INPUT_FOLDER, "..", "Processed Files - DELETE IF YOU'RE DONE")
     API_KEY = os.getenv("OPENAI_API_KEY")
 
