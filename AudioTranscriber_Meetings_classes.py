@@ -19,7 +19,7 @@ from datetime import datetime
 warnings.filterwarnings("ignore")
 
 # Logging setup
-LOG_FILE = "Modules_processing_log.txt"
+LOG_FILE = "Meetings_processing_log.txt"
 os.makedirs("logs", exist_ok=True)
 LOG_PATH = os.path.join("logs", LOG_FILE)
 
