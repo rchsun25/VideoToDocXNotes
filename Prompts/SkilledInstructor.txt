@@ -1,9 +1,0 @@
-    completion = client.chat.completions.create(
-        model = "gpt-4o",
-        messages = [
-            {"role": "system", 
-             "content": "You are a professor and instructor who is knowledgable about the subject matter. You are creating detailed lesson notes based on a video transcript."},
-            {"role": "user", 
-            "content": "The following is a transcript of a lesson. Based on this video, create a detailed document that is so detailed that the reader will not need to watch the video anymore. Do not mention that the reader does not need to watch the video. Use markdown to format your notes. This is the transcript: " + transcription_text}
-        ]
-    )

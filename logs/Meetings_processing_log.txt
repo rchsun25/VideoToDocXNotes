@@ -1,0 +1,46 @@
+[2025-01-30 18:28:04] Watchdog is still running...
+[2025-01-30 18:28:04] Initialized FileManager with input folder: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes
+[2025-01-30 18:28:05] Initialized Transcriber with model size: small on device: cpu
+[2025-01-30 18:28:05] Initialized SummaryGenerator with OpenAI API
+[2025-01-30 18:28:05] Initialized ProcessingPipeline
+[2025-01-30 18:28:05] Initialized FileMonitor for folder: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes
+[2025-01-30 18:28:05] Started file monitoring
+[2025-01-30 18:28:39] Detected new file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:28:39] Started processing file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:28:39] Reading DOCX file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:28:39] Reading DOCX file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:28:40] Generating notes for file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:28:40] Generating notes for transcription from: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03
+[2025-01-30 18:28:57] Generated notes saved as: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03_notes.docx
+[2025-01-30 18:28:57] Moving files to final locations for: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:28:57] Moved E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03_notes.docx to root folder: E:\MeetingNotesGenerator\Mother Program_2025-01-03_notes.docx
+[2025-01-30 18:28:57] Created processed folder: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\..\Processed Files - DELETE IF YOU'RE DONE
+[2025-01-30 18:28:57] Moved E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx to processed folder: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\..\Processed Files - DELETE IF YOU'RE DONE\Mother Program_2025-01-03.docx
+[2025-01-30 18:28:57] Successfully processed file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:28:57] Removed processing indicator for: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:34:23] Detected new file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\~$ther Program_2025-01-03.docx
+[2025-01-30 18:34:23] Started processing file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\~$ther Program_2025-01-03.docx
+[2025-01-30 18:34:23] Reading DOCX file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\~$ther Program_2025-01-03.docx
+[2025-01-30 18:34:23] Reading DOCX file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\~$ther Program_2025-01-03.docx
+[2025-01-30 18:34:23] Error processing file E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\~$ther Program_2025-01-03.docx: Pandoc died with exitcode "63" during conversion: couldn't unpack docx container: Did not find end of central directory signature
+
+[2025-01-30 18:35:02] Watchdog is still running...
+[2025-01-30 18:35:02] Initialized FileManager with input folder: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes
+[2025-01-30 18:35:04] Initialized Transcriber with model size: small on device: cpu
+[2025-01-30 18:35:04] Initialized SummaryGenerator with OpenAI API
+[2025-01-30 18:35:04] Initialized ProcessingPipeline
+[2025-01-30 18:35:04] Initialized FileMonitor for folder: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes
+[2025-01-30 18:35:04] Started file monitoring
+[2025-01-30 18:38:37] Detected new file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:38:37] Started processing file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:38:37] Reading DOCX file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:38:37] Reading DOCX file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:38:37] Generating notes for file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:38:37] Generating notes for transcription from: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03
+[2025-01-30 18:38:58] Generated notes saved as: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03_notes.docx
+[2025-01-30 18:38:58] Moving files to final locations for: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:38:58] Moved E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03_notes.docx to root folder: E:\MeetingNotesGenerator\Mother Program_2025-01-03_notes.docx
+[2025-01-30 18:38:58] Created processed folder: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\..\Processed Files - DELETE IF YOU'RE DONE
+[2025-01-30 18:38:58] Moved E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx to processed folder: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\..\Processed Files - DELETE IF YOU'RE DONE\Mother Program_2025-01-03.docx
+[2025-01-30 18:38:58] Successfully processed file: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
+[2025-01-30 18:38:58] Removed processing indicator for: E:\MeetingNotesGenerator\Drop Here to Generate Meeting Notes\Mother Program_2025-01-03.docx
