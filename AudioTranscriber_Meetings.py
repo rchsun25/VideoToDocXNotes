@@ -255,9 +255,51 @@ class FileMonitor:
         """Initializes file monitoring with folder and processing pipeline."""
         self.folder = folder
         self.pipeline = pipeline
-        self.observer = watchdog.observers.Observer()
+        self.observer = None
         self.event_handler = self.create_handler()
+        self.running = False
         log_event(f"Initialized FileMonitor for folder: {folder}")
+
+    def start_monitoring(self):
+        """Starts or restarts the file monitoring."""
+        if self.observer and self.observer.is_alive():
+            self.observer.stop()
+            self.observer.join()
+            
+        self.observer = watchdog.observers.Observer()
+        self.observer.schedule(self.event_handler, self.folder, recursive=False)
+        self.observer.start()
+        self.running = True
+        log_event("Started file monitoring")
+
+    def stop_monitoring(self):
+        """Stops the file monitoring."""
+        if self.observer:
+            self.observer.stop()
+            self.observer.join()
+        self.running = False
+        log_event("Stopped file monitoring")
+
+    def process_existing_files(self):
+        """Process files already present in the folder at startup."""
+        log_event("Checking for existing files in input folder...")
+        
+        # Get patterns from the event handler (e.g., ["*.mp4", "*.mkv", ...])
+        patterns = self.event_handler.patterns
+        allowed_extensions = {p.split("*.")[-1].lower() for p in patterns if "*." in p}
+        
+        for filename in os.listdir(self.folder):
+            file_path = os.path.join(self.folder, filename)
+            
+            # Skip directories and non-matching files
+            if not os.path.isfile(file_path):
+                continue
+                
+            # Check file extension against allowed patterns
+            file_ext = filename.split(".")[-1].lower()
+            if file_ext in allowed_extensions:
+                log_event(f"Found existing file to process: {file_path}")
+                self.process_file(file_path)
 
     def create_handler(self):
         """Creates a watchdog event handler for supported file patterns."""
@@ -288,17 +330,28 @@ class FileMonitor:
         self.pipeline.process_file(file_path)
 
     def start(self):
-        """Starts the file monitoring process."""
-        self.observer.schedule(self.event_handler, self.folder, recursive=False)
-        self.observer.start()
-        log_event("Started file monitoring")
-        try:
-            while True:
-                time.sleep(1)
-        except KeyboardInterrupt:
-            self.observer.stop()
-            log_event("Stopped file monitoring")
-        self.observer.join()
+        """Main monitoring loop with health checks."""
+        self.process_existing_files()
+        
+        while True:
+            try:
+                # Start or restart monitoring
+                if not self.observer or not self.observer.is_alive():
+                    log_event("Starting/Restarting file monitoring...")
+                    self.start_monitoring()
+
+                # Check observer status every 5 minutes
+                time.sleep(300)  # 5 minutes
+                
+                if not self.observer.is_alive():
+                    log_event("Watchdog observer not running - attempting restart")
+                    self.start_monitoring()
+
+            except Exception as e:
+                error_msg = f"Monitoring error: {str(e)}"
+                log_event(error_msg)
+                self.stop_monitoring()
+                time.sleep(5)  # Wait before restart attempt
 
 # Main execution
 if __name__ == "__main__":
