@@ -1,5 +1,3 @@
-
-```markdown
 # Automated Notes Generator 🚀
 
 Two Python scripts for generating **meeting minutes** and **lecture module notes** from audio/video/text files, powered by Whisper transcription and OpenAI GPT-4.
