@@ -341,11 +341,13 @@ class FileMonitor:
                     self.start_monitoring()
 
                 # Check observer status every 5 minutes
-                time.sleep(300)  # 5 minutes
+                time.sleep(600)  # 10 minutes
                 
                 if not self.observer.is_alive():
                     log_event("Watchdog observer not running - attempting restart")
                     self.start_monitoring()
+                else:
+                    log_event("Monitoring is running...")
 
             except Exception as e:
                 error_msg = f"Monitoring error: {str(e)}"
@@ -359,10 +361,10 @@ if __name__ == "__main__":
     PROCESSED_FOLDER = os.path.join(INPUT_FOLDER, "..", "Processed Files - DELETE IF YOU'RE DONE")
     API_KEY = os.getenv("OPENAI_API_KEY")
 
-    # Start watchdog heartbeat in a separate thread
-    import threading
-    heartbeat_thread = threading.Thread(target=watchdog_heartbeat, daemon=True)
-    heartbeat_thread.start()
+    # # Start watchdog heartbeat in a separate thread
+    # import threading
+    # heartbeat_thread = threading.Thread(target=watchdog_heartbeat, daemon=True)
+    # heartbeat_thread.start()
 
     # Initialize and start the pipeline
     pipeline = ProcessingPipeline(
