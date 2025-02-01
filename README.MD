@@ -108,14 +108,6 @@ Root Folder/
 - Meeting logs: `logs/Meetings_processing_log.txt`  
 - Module logs: `logs/Modules_processing_log.txt`  
 
-## 🤝 Contributing
-1. Fork the repository  
-2. Create a feature branch (`git checkout -b feature/improvement`)  
-3. Submit a pull request  
-
-## 📜 License
-MIT License - See [LICENSE](LICENSE)  
-
 ---
 
 **Credits**  
