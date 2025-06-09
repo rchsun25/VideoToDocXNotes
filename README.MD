@@ -72,3 +72,12 @@
 ## Contributing
 
 Feel free to open issues or pull requests for suggestions and improvements.
+
+## Running Tests
+
+Unit tests are written with [pytest](https://pytest.org). After installing the
+requirements, run the test suite from the repository root:
+
+```bash
+pytest
+```

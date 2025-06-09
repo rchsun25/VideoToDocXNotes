@@ -16,7 +16,8 @@ warnings.filterwarnings("ignore")
 #Extract audio from video file
 def extract_audio(audio_file):
     print("\nExtracting audio from video file:", audio_file)
-    mp3_audio_file_name = pipelineFile.split(".")[0] + ".mp3"
+    base_name, _ = os.path.splitext(pipelineFile)
+    mp3_audio_file_name = base_name + ".mp3"
     ffmpeg.input(audio_file).output(mp3_audio_file_name, loglevel="quiet").run(overwrite_output=True)
     audio_file = mp3_audio_file_name
 
@@ -141,54 +142,56 @@ def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_pat
 ########################## PROGRAM STARTS HERE ####################################
 
 #GET THE AUDIO FILE PATH
+if __name__ == "__main__":
+    root = filedialog.Tk()
+    root.wm_attributes('-topmost', 1)
+    root.withdraw()
 
-root = filedialog.Tk()
-root.wm_attributes('-topmost', 1)
-root.withdraw()
-
-files = filedialog.askopenfilenames(parent=root,
-                                    filetypes=[("Video/Audio Files", "*.mp4 *.mkv *.mp3"), ("Transcript", "*.txt *.docx")])
-filesList = list(files)
-if not filesList:
-    messagebox.showerror(title="Error", message="No file selected.")
-    print("No file selected.")
-    exit()
-
-while filesList:
-    pipelineFile = filesList.pop(0)
-    print("\nProcessing file:", pipelineFile)
-
-    audio_folder = os.path.dirname(pipelineFile)
-
-    transcription_path = ""
-    transcription_text = ""
-    md_path = ""
-    docx_path = ""
-
-    #Extract audio if file is a video
-    if pipelineFile.endswith(('.mp4','.mkv')):
-        pipelineFile = extract_audio(pipelineFile)
-
-    if pipelineFile.endswith('.mp3'):
-        #SEARCH FOR THE AUDIO IN THE FILE PATH AND EXECUTE TRANSCRIPTION
-        transcription_text,transcription_path = transcribe_audio(pipelineFile)
-    if pipelineFile.endswith(('.txt')):
-        #READ TRANSCRIPTION FROM THE TEXT FILE
-        with open(pipelineFile, "r", encoding="utf-8") as text_file:
-            transcription_text = text_file.read()
-    if pipelineFile.endswith('.docx'):
-        #READ TRANSCRIPTION FROM THE DOCX FILE
-        transcription_text = pypandoc.convert_file(pipelineFile, 'plain', format='docx')
-
-    #If no transcription text found, something went wrong, exit
-    if not transcription_text:
-        messagebox.showerror(title="Error", message="File type not supported.")
-        print("\nFile type not supported.")
+    files = filedialog.askopenfilenames(
+        parent=root,
+        filetypes=[("Video/Audio Files", "*.mp4 *.mkv *.mp3"), ("Transcript", "*.txt *.docx")],
+    )
+    filesList = list(files)
+    if not filesList:
+        messagebox.showerror(title="Error", message="No file selected.")
+        print("No file selected.")
         exit()
-    #Process transcript to summary with openai
-    md_path, docx_path = openai_summary(transcription_text)
 
-    #Move files to WORK and NOTES folders
-    MoveFilestoFolders(audio_folder, pipelineFile, transcription_path, md_path, docx_path)
+    while filesList:
+        pipelineFile = filesList.pop(0)
+        print("\nProcessing file:", pipelineFile)
 
-print("\nProcess completed.")
+        audio_folder = os.path.dirname(pipelineFile)
+
+        transcription_path = ""
+        transcription_text = ""
+        md_path = ""
+        docx_path = ""
+
+        #Extract audio if file is a video
+        if pipelineFile.endswith(('.mp4', '.mkv')):
+            pipelineFile = extract_audio(pipelineFile)
+
+        if pipelineFile.endswith('.mp3'):
+            #SEARCH FOR THE AUDIO IN THE FILE PATH AND EXECUTE TRANSCRIPTION
+            transcription_text, transcription_path = transcribe_audio(pipelineFile)
+        if pipelineFile.endswith('.txt'):
+            #READ TRANSCRIPTION FROM THE TEXT FILE
+            with open(pipelineFile, "r", encoding="utf-8") as text_file:
+                transcription_text = text_file.read()
+        if pipelineFile.endswith('.docx'):
+            #READ TRANSCRIPTION FROM THE DOCX FILE
+            transcription_text = pypandoc.convert_file(pipelineFile, 'plain', format='docx')
+
+        #If no transcription text found, something went wrong, exit
+        if not transcription_text:
+            messagebox.showerror(title="Error", message="File type not supported.")
+            print("\nFile type not supported.")
+            exit()
+        #Process transcript to summary with openai
+        md_path, docx_path = openai_summary(transcription_text)
+
+        #Move files to WORK and NOTES folders
+        MoveFilestoFolders(audio_folder, pipelineFile, transcription_path, md_path, docx_path)
+
+    print("\nProcess completed.")
