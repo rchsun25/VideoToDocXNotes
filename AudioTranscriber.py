@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore")
 #Extract audio from video file
 def extract_audio(audio_file):
     print("\nExtracting audio from video file:", audio_file)
-    mp3_audio_file_name = pipelineFile.split(".")[0] + ".mp3"
+    mp3_audio_file_name = os.path.splitext(pipelineFile)[0] + ".mp3"
     ffmpeg.input(audio_file).output(mp3_audio_file_name, loglevel="quiet").run(overwrite_output=True)
     audio_file = mp3_audio_file_name
 
@@ -52,7 +52,7 @@ def transcribe_audio(audio_file_path):
     print("\nTranscription Results:\n", transcription_text) 
     #write transcription to text file
     #transcription file path
-    transcription_path = pipelineFile.split(".")[0] + "_transcription.txt"
+    transcription_path = os.path.splitext(pipelineFile)[0] + "_transcription.txt"
     with open(transcription_path, "w", encoding="utf-8") as text_file:
         text_file.write(transcription_text)
     return transcription_text, transcription_path
@@ -96,14 +96,14 @@ def openai_summary(transcription_text):
 
     #write summary to .md file
     #summary file path
-    md_path = pipelineFile.split(".")[0] + "_notes.md"
+    md_path = os.path.splitext(pipelineFile)[0] + "_notes.md"
     with open(md_path, "w", encoding="utf-8") as text_file:
         text_file.write(completion.choices[0].message.content)
 
     print("\nMD summary saved to:", md_path)
 
     #save as .docx file
-    docx_path = pipelineFile.split(".")[0] + "_notes.docx"
+    docx_path = os.path.splitext(pipelineFile)[0] + "_notes.docx"
     pypandoc.convert_file(md_path, 'docx', outputfile=docx_path)
     print("DOCX summary saved to:", docx_path)
     
