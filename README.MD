@@ -1,12 +1,12 @@
 # VideoToDocXNotes
 
-**VideoToDocXNotes** is a Python-based tool that transcribes audio or extracts audio from video files, generates a transcription, and creates a summarized document using OpenAI's language models. It supports output in `.md` (Markdown) and `.docx` formats.
+**VideoToDocXNotes** is a Python-based tool that transcribes audio or extracts audio from video files, generates a transcription, and creates a summarized document using OpenAI's language models. It temporarily writes the summary to a Markdown file before saving it as a `.docx`; only the `.docx` summary is retained.
 
 ## Features
 - **Supported input file types**: Video: `.mp4`, `.mkv`, Audio: `.mp3`, Transcript: `.txt`, `.docx`
 - **Audio extraction**: Automatically extracts audio from video files (`.mp4`, `.mkv`) using `ffmpeg`.
 - **Transcription**: Uses OpenAI's Whisper model to transcribe audio files.
-- **Summarization**: Summarizes transcriptions using OpenAI GPT and formats the summary into a Markdown file.
+- **Summarization**: Summarizes transcriptions using OpenAI GPT, temporarily storing the summary as a Markdown file before converting it to `.docx`.
 - **File organization**: Automatically organizes generated files into `WORK` and `NOTES` folders for easy access.
 
 ## Requirements
@@ -45,7 +45,7 @@
 3. The program will:
    - Extract the audio if it's a video file.
    - Transcribe the audio.
-   - Summarize the transcription and generate output files in `.md` and `.docx` formats.
+   - Summarize the transcription, create a temporary `.md` file, and generate a `.docx` summary.
 
 4. All processed files will be moved to the appropriate folders:
    - **WORK** folder for transcriptions and other working files.
@@ -54,7 +54,7 @@
 ## Output
 
 - **Transcriptions**: Saved as `.txt` files.
-- **Summaries**: Available as `.md` and `.docx` files.
+- **Summaries**: The `.docx` file is kept while the intermediate `.md` file is deleted.
 
 ## File Structure
 
@@ -64,7 +64,6 @@
 |-- WORK/
     |-- audio_file.mp3
     |-- transcription.txt
-    |-- summary.md
 |-- NOTES/
     |-- summary.docx
 ```

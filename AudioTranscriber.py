@@ -21,16 +21,18 @@ def extract_audio(audio_file):
     ffmpeg.input(audio_file).output(mp3_audio_file_name, loglevel="quiet").run(overwrite_output=True)
     audio_file = mp3_audio_file_name
 
-    #move video file to PROCESSED VIDEOS folder
+
+    # move original video to a processed folder
     work_folder = os.path.join(audio_folder, "PROCESSED VIDEOS")
     if not os.path.exists(work_folder):
         os.makedirs(work_folder)
-    os.replace(pipelineFile, os.path.join(work_folder, os.path.basename(pipelineFile)))
+    os.replace(video_file, os.path.join(work_folder, os.path.basename(video_file)))
 
-    return audio_file
+    return mp3_audio_file_name
 
 # TRANSFORMERS MODEL: whisper-small
 def transcribe_audio(audio_file_path):
+    """Transcribe an audio file using Whisper."""
     print("\nTranscribing audio file:", audio_file_path)
 
     #Check if GPU is available
@@ -53,13 +55,15 @@ def transcribe_audio(audio_file_path):
     print("\nTranscription Results:\n", transcription_text) 
     #write transcription to text file
     #transcription file path
-    transcription_path = pipelineFile.split(".")[0] + "_transcription.txt"
+
+    transcription_path = os.path.splitext(audio_file_path)[0] + "_transcription.txt"
+
     with open(transcription_path, "w", encoding="utf-8") as text_file:
         text_file.write(transcription_text)
     return transcription_text, transcription_path
 
 #Process transcript to summary with openai
-def openai_summary(transcription_text):
+def openai_summary(transcription_text, base_path):
 
     #Need to set OPENAI_API_KEY as environment variable
 
@@ -72,7 +76,7 @@ def openai_summary(transcription_text):
         model = "gpt-4o",
         # messages = [
         #     {"role": "system", 
-        #      "content": "You are a professor and instructor who is knowledgable about the subject matter. You are creating detailed lesson notes based on a video transcript."},
+        #      "content": "You are a professor and instructor who is knowledgeable about the subject matter. You are creating detailed lesson notes based on a video transcript."},
         #     {"role": "user", 
         #     "content": "The following is a transcript of a lesson. Based on this video, create a detailed document that is so detailed that the reader will not need to watch the video anymore. Do not mention that the reader does not need to watch the video. Use markdown to format your notes. This is the transcript: " + transcription_text}
         # ]
@@ -84,7 +88,7 @@ def openai_summary(transcription_text):
     #     ]
         messages = [
             {"role": "system", 
-            "content": "You are a detailed mechanical engineering notetaker knowledgable about the subject matter. You are creating detailed meeting notes based on a meeting transcript."},
+            "content": "You are a detailed mechanical engineering notetaker knowledgeable about the subject matter. You are creating detailed meeting notes based on a meeting transcript."},
             {"role": "user",                                                                                      
              "content":
                 "Meeting Minutes: Develop comprehensive meeting minutes including: Attendees: List all participants. Discussion Points: Detail the topics discussed, including any debates, alternate viewpoints, problem statements, and current situations. Decisions Made: Record all decisions, including who made them and the rationale. Action Items: Specify tasks assigned, responsible individuals, and deadlines. Data & Insights: Display any data presented or insights shared that influenced the meeting\'s course, including any clarifications. Follow-Up: Note any agreed-upon follow-up meetings or checkpoints. Include all details in the notes, including all numbers and equations discussed. Do not summarize anything for the meeting notes. Write notes that are so detailed that the reader will not have to watch the video at all. Use markdown to format your notes. This is the transcript: " + transcription_text
@@ -97,22 +101,26 @@ def openai_summary(transcription_text):
 
     #write summary to .md file
     #summary file path
-    md_path = pipelineFile.split(".")[0] + "_notes.md"
+
+    md_path = base_path + "_notes.md"
+
     with open(md_path, "w", encoding="utf-8") as text_file:
         text_file.write(completion.choices[0].message.content)
 
     print("\nMD summary saved to:", md_path)
 
     #save as .docx file
-    docx_path = pipelineFile.split(".")[0] + "_notes.docx"
+
+    docx_path = base_path + "_notes.docx"
+
     pypandoc.convert_file(md_path, 'docx', outputfile=docx_path)
     print("DOCX summary saved to:", docx_path)
     
     return md_path, docx_path
 
-#Move .txt and .mp3 files to a WORK folder
-#Move .docx file to a NOTES folder
-#Create WORK and NOTES folders if they don't exist
+# Move .txt and .mp3 files to a WORK folder
+# Move .docx file to a NOTES folder
+# Delete the temporary .md file and create WORK and NOTES folders if they do not exist
 def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_path, docx_path):
     work_folder = os.path.join(audio_folder, "WORK")
     notes_folder = os.path.join(audio_folder, "NOTES")
@@ -127,10 +135,9 @@ def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_pat
     if os.path.exists(audio_file_path):
         os.replace(audio_file_path, os.path.join(work_folder, os.path.basename(audio_file_path)))
     if os.path.exists(transcription_path):
-        os.replace(transcription_path, os.path.join(work_folder, os .path.basename(transcription_path)))
+        os.replace(transcription_path, os.path.join(work_folder, os.path.basename(transcription_path)))
     if os.path.exists(md_path):
-        #os.replace(md_path, os.path.join(work_folder, os.path.basename(md_path)))
-        #delete the .md file
+        # Delete the temporary Markdown file
         os.remove(md_path)
     if os.path.exists(docx_path):
         os.replace(docx_path, os.path.join(notes_folder, os.path.basename(docx_path)))
