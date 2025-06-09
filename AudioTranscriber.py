@@ -14,6 +14,7 @@ import ffmpeg
 warnings.filterwarnings("ignore")
 
 #Extract audio from video file
+
 def extract_audio(video_file, audio_folder):
     """Extract the audio track from a video file."""
     print("\nExtracting audio from video file:", video_file)
@@ -53,7 +54,9 @@ def transcribe_audio(audio_file_path):
     print("\nTranscription Results:\n", transcription_text) 
     #write transcription to text file
     #transcription file path
+
     transcription_path = os.path.splitext(audio_file_path)[0] + "_transcription.txt"
+
     with open(transcription_path, "w", encoding="utf-8") as text_file:
         text_file.write(transcription_text)
     return transcription_text, transcription_path
@@ -97,14 +100,18 @@ def openai_summary(transcription_text, base_path):
 
     #write summary to .md file
     #summary file path
+
     md_path = base_path + "_notes.md"
+
     with open(md_path, "w", encoding="utf-8") as text_file:
         text_file.write(completion.choices[0].message.content)
 
     print("\nMD summary saved to:", md_path)
 
     #save as .docx file
+
     docx_path = base_path + "_notes.docx"
+
     pypandoc.convert_file(md_path, 'docx', outputfile=docx_path)
     print("DOCX summary saved to:", docx_path)
     
