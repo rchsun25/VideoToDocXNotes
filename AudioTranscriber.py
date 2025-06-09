@@ -72,7 +72,7 @@ def openai_summary(transcription_text, base_path):
         model = "gpt-4o",
         # messages = [
         #     {"role": "system", 
-        #      "content": "You are a professor and instructor who is knowledgable about the subject matter. You are creating detailed lesson notes based on a video transcript."},
+        #      "content": "You are a professor and instructor who is knowledgeable about the subject matter. You are creating detailed lesson notes based on a video transcript."},
         #     {"role": "user", 
         #     "content": "The following is a transcript of a lesson. Based on this video, create a detailed document that is so detailed that the reader will not need to watch the video anymore. Do not mention that the reader does not need to watch the video. Use markdown to format your notes. This is the transcript: " + transcription_text}
         # ]
@@ -84,7 +84,7 @@ def openai_summary(transcription_text, base_path):
     #     ]
         messages = [
             {"role": "system", 
-            "content": "You are a detailed mechanical engineering notetaker knowledgable about the subject matter. You are creating detailed meeting notes based on a meeting transcript."},
+            "content": "You are a detailed mechanical engineering notetaker knowledgeable about the subject matter. You are creating detailed meeting notes based on a meeting transcript."},
             {"role": "user",                                                                                      
              "content":
                 "Meeting Minutes: Develop comprehensive meeting minutes including: Attendees: List all participants. Discussion Points: Detail the topics discussed, including any debates, alternate viewpoints, problem statements, and current situations. Decisions Made: Record all decisions, including who made them and the rationale. Action Items: Specify tasks assigned, responsible individuals, and deadlines. Data & Insights: Display any data presented or insights shared that influenced the meeting\'s course, including any clarifications. Follow-Up: Note any agreed-upon follow-up meetings or checkpoints. Include all details in the notes, including all numbers and equations discussed. Do not summarize anything for the meeting notes. Write notes that are so detailed that the reader will not have to watch the video at all. Use markdown to format your notes. This is the transcript: " + transcription_text
