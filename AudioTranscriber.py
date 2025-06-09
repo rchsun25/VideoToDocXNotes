@@ -109,9 +109,9 @@ def openai_summary(transcription_text):
     
     return md_path, docx_path
 
-#Move .txt and .mp3 files to a WORK folder
-#Move .docx file to a NOTES folder
-#Create WORK and NOTES folders if they don't exist
+# Move .txt and .mp3 files to a WORK folder
+# Move .docx file to a NOTES folder
+# Delete the temporary .md file and create WORK and NOTES folders if they do not exist
 def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_path, docx_path):
     work_folder = os.path.join(audio_folder, "WORK")
     notes_folder = os.path.join(audio_folder, "NOTES")
@@ -128,8 +128,7 @@ def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_pat
     if os.path.exists(transcription_path):
         os.replace(transcription_path, os.path.join(work_folder, os .path.basename(transcription_path)))
     if os.path.exists(md_path):
-        #os.replace(md_path, os.path.join(work_folder, os.path.basename(md_path)))
-        #delete the .md file
+        # Delete the temporary Markdown file
         os.remove(md_path)
     if os.path.exists(docx_path):
         os.replace(docx_path, os.path.join(notes_folder, os.path.basename(docx_path)))
