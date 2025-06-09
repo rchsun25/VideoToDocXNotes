@@ -26,6 +26,8 @@ def extract_audio(audio_file):
     work_folder = os.path.join(audio_folder, "PROCESSED VIDEOS")
     if not os.path.exists(work_folder):
         os.makedirs(work_folder)
+    # move the original video file that was processed
+    video_file = pipelineFile
     os.replace(video_file, os.path.join(work_folder, os.path.basename(video_file)))
 
     return mp3_audio_file_name
@@ -150,19 +152,23 @@ def MoveFilestoFolders(audio_folder, audio_file_path, transcription_path, md_pat
 
 #GET THE AUDIO FILE PATH
 if __name__ == "__main__":
-    root = filedialog.Tk()
-    root.wm_attributes('-topmost', 1)
-    root.withdraw()
+    import sys
+    if len(sys.argv) > 1:
+        filesList = [sys.argv[1]]
+    else:
+        root = filedialog.Tk()
+        root.wm_attributes('-topmost', 1)
+        root.withdraw()
 
-    files = filedialog.askopenfilenames(
-        parent=root,
-        filetypes=[("Video/Audio Files", "*.mp4 *.mkv *.mp3"), ("Transcript", "*.txt *.docx")],
-    )
-    filesList = list(files)
-    if not filesList:
-        messagebox.showerror(title="Error", message="No file selected.")
-        print("No file selected.")
-        exit()
+        files = filedialog.askopenfilenames(
+            parent=root,
+            filetypes=[("Video/Audio Files", "*.mp4 *.mkv *.mp3"), ("Transcript", "*.txt *.docx")],
+        )
+        filesList = list(files)
+        if not filesList:
+            messagebox.showerror(title="Error", message="No file selected.")
+            print("No file selected.")
+            exit()
 
     while filesList:
         pipelineFile = filesList.pop(0)
