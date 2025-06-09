@@ -80,3 +80,15 @@ requirements, run the test suite from the repository root:
 ```bash
 pytest
 ```
+
+## WPF Version
+
+A minimal Windows desktop interface is provided in the `VideoToDocXNotesWPF`
+folder. It allows you to select a file and runs `AudioTranscriber.py` in the
+background. To build it you will need the [.NET SDK](https://dotnet.microsoft.com/):
+
+```bash
+dotnet build VideoToDocXNotesWPF/VideoToDocXNotesWPF.csproj
+```
+
+Run the resulting executable on Windows to launch the GUI.
